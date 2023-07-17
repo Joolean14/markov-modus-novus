@@ -21,7 +21,7 @@ markov_model = {
 }
 
 
-def generate_melody(markov_model, limit=3, start=start_note):
+def generate_melody(markov_model, limit=20, start=start_note):
     n = 0
     curr_state = start
     next_state = None
@@ -37,7 +37,6 @@ def generate_melody(markov_model, limit=3, start=start_note):
     # print(melody)
     return melody
 
-generate_melody(markov_model)
 
 
 
@@ -50,25 +49,32 @@ def generate_random_midi_note (midi = midi_numbers):
 
 def map_melody():
     random_midi_note = generate_random_midi_note()
-    melody = generate_melody(markov_model)
-    starting_note = pitch.Pitch(random_midi_note)
-
-    
-    note3 = note.Note(50)
+    generated_intervals = generate_melody(markov_model)
     midi_melody = stream.Stream()
-    midi_melody.append(note3)
+    print(generated_intervals)
 
-    print(midi_melody)
+    starting_note = note.Note(random_midi_note[0])
+    midi_melody.append(starting_note)
+    print(starting_note.name)
 
-    midi_melody.show()
+    temp = 0
 
-    # print(starting_note.midi)
-    
-    # for x in melody:
-    #     midi_melody.append(starting_note.transpose(x))      
-    #     print(midi_melody)
+    for x in generated_intervals:
+        appendee = midi_melody[x]
+        midi_melody.append(appendee.transpose(generated_intervals[x]))
 
+    # for thisNote in midi_melody:
+    #     print(midi_melody.step)
 
-    return
+#   for x in generated_intervals:
+#         temp = midi_melody[-1]
+#         midi_melody.append(starting_note.transpose(generated_intervals[x]))      
+
+    output_file = "output.mid"
+    midi_melody.write("midi", fp=output_file)
+
+    # midi_melody.show()
+
+    return midi_melody
 
 map_melody()
